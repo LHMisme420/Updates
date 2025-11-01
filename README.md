@@ -248,3 +248,29 @@ class LogEntry:
         self,
         index: int,
         payload: Dict[s]()
+import base64
+import json
+import requests
+from typing import Dict, Any
+
+# If you're using solana-py, you can swap this out for real Transaction objects.
+# This version shows the raw JSON-RPC flow for clarity.
+
+class SolanaNotarizer:
+    """
+    Publishes a Merkle root to Solana via the Memo program.
+
+    Strategy:
+    - Build a transaction with 1 instruction: memo(root_payload)
+    - Sign it with a local private key (ed25519) – here we assume you've got it as base58/base64
+    - Send via sendTransaction
+    """
+
+    def __init__(self, rpc_url: str, payer_private_key: bytes):
+        """
+        rpc_url: e.g. "https://api.devnet.solana.com" (or your provider endpoint)
+        payer_private_key: 64-byte ed25519 private key (seed+pub) as raw bytes
+        NOTE: in real env, load from KMS/HSM, not from disk.
+        """
+        self.rpc_url = rpc_url
+        self.payer_private_
