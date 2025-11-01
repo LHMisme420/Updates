@@ -183,3 +183,68 @@ class Ledger:
         Create new chained log entry and push to replicas.
         """
         # Figure out the last
+#!/usr/bin/env python3
+"""
+DLT-style Audit Log (Hardened) for DECF / IMS
+
+Adds:
+- Per-entry signatures (node-signed)
+- Merkle root computation
+- Notarization stub for external anchoring
+- Crypto provider abstraction
+"""
+
+import hashlib
+import hmac
+import json
+import random
+import time
+from typing import Any, Dict, List, Optional, Protocol
+
+
+# ============================================================
+# 0. CRYPTO PROVIDER (pluggable)
+# ============================================================
+
+class CryptoProvider(Protocol):
+    """
+    Abstracts signing and verifying.
+    In prod: back this by HSM/KMS or real Ed25519.
+    Here: HMAC placeholder.
+    """
+    def sign(self, message: bytes) -> str:
+        ...
+
+    def verify(self, message: bytes, signature: str) -> bool:
+        ...
+
+
+class HMACCryptoProvider:
+    """
+    Simple HMAC-based signer for demo.
+    Replace with Ed25519 or ECDSA in production.
+    """
+    def __init__(self, secret: str):
+        self.secret = secret.encode("utf-8")
+
+    def sign(self, message: bytes) -> str:
+        digest = hmac.new(self.secret, message, hashlib.sha3_256).hexdigest()
+        return digest
+
+    def verify(self, message: bytes, signature: str) -> bool:
+        expected = self.sign(message)
+        return hmac.compare_digest(expected, signature)
+
+
+# ============================================================
+# 1. CORE: Log Entry
+# ============================================================
+
+class LogEntry:
+    """
+    A single, chained, signed log event.
+    """
+    def __init__(
+        self,
+        index: int,
+        payload: Dict[s]()
