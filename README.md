@@ -274,3 +274,17 @@ class SolanaNotarizer:
         """
         self.rpc_url = rpc_url
         self.payer_private_
+notarizer = Notarizer("demo-ledger")
+print("Merkle+Notarize:", verifier.merkle_and_notarize(notarizer))
+from datetime import datetime
+
+# your Solana endpoint (devnet/testnet/mainnet-beta or a provider)
+SOLANA_RPC = "https://api.devnet.solana.com"  # pick your cluster
+
+# load your payer key (DO NOT hardcode in real env)
+with open("solana-payer-keypair.bin", "rb") as f:
+    payer_key = f.read()
+
+sol_notarizer = SolanaNotarizer(SOLANA_RPC, payer_key)
+root_result = verifier.merkle_and_notarize(sol_notarizer)
+print(root_result)
